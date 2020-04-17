@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { User } from './models/user';
 import { UserService } from './services/user.service';
 
@@ -8,7 +8,7 @@ import { UserService } from './services/user.service';
   styleUrls: ['./app.component.css'],
   providers: [UserService]
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   public title = 'Helpdesk';
   public user: User;
   public identity;
@@ -20,15 +20,22 @@ export class AppComponent {
     this.user = new User('','','','','', false);
   }
 
+  ngOnInit(): void {
+    
+  }
+
   doLogin(){
     this.userService.login(this.user).subscribe(
       response => {
         this.identity = response['user'];
         this.token = response['token'];
+        console.log(this.identity);
+        console.log(this.token);
+        
+        
       }, 
       error => {
-        console.log(error);
-        
+        console.log(error);        
       }
     );
   }

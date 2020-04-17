@@ -1,32 +1,66 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpResponse, HttpHeaders} from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { GLOBAL } from './global';
 
-import { User } from '../models/user';
+@Injectable()
+export class UserService{
 
-@Injectable({
-  providedIn: 'root'
-})
-export class UserService {
+    public url: string;
 
-  public url;
-  public identity;
-  public token;
+    public identity;
+    public token;
 
-  constructor(
-    private http: HttpClient
-  ) { 
-    this.url = 'http://localhost:3977/api/login';
-  }
+    constructor(private _http: HttpClient){
+        this.url = GLOBAL.url;
+    }
 
-  login(user){
-    let params = JSON.stringify(user);
-    console.log(params);
+    login(user){
+      let params = JSON.stringify(user);
 
-    let headers = new HttpHeaders({'Content-Type':'application/jason'});
+      let headers = new HttpHeaders({'Content-Type':'application/json'});
 
-    return this.http.post(this.url, params, {headers : headers});
-    
-  }
+      return this._http.post(this.url + 'login', params, {headers: headers});
+    }
+
+    signup(user){
+      let params = JSON.stringify(user);
+
+      let headers = new HttpHeaders({'Content-Type':'application/json'});
+
+      return this._http.post(this.url + 'register', params, {headers: headers});
+    }
+
+    updateUser(user){
+      let params = JSON.stringify(user);
+
+      let headers = new HttpHeaders({
+        'Content-Type':'application/json',
+        'Authorization' : this.getToken()
+      });
+
+      return this._http.put(this.url + 'update-user/' + user._id, params, {headers: headers});
+    }
+
+    getIdentity(){
+      let identity = JSON.parse(localStorage.getItem('identity'));
+      if(identity != "undefined"){
+        this.identity = identity;
+      } else{
+        this.identity = null;
+      }
+      return this.identity;
+    }
+
+    getToken(){
+      let token = localStorage.getItem('token');
+      if(token != "undefined"){
+        this.token = token;
+      } else{
+        this.token = null;
+      }
+      return token;
+    }
+
 }
